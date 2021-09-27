@@ -26,6 +26,7 @@ data
 
 ## Results
 We provide the results of several pretrained models and corresponding scripts on different backbones.
+The results have slight differences from the paper because we make minor modifications to the inference codes.
 
 Download the pretrained models and put them in 'pretrained' folder.
 
