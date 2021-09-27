@@ -66,7 +66,7 @@ Download the pretrained models and put them in 'pretrained' folder.
 </tbody></table>
 
 ### Evaluation
-**YouTube-VIS 2019**: A json file will be saved in `../Results' folder. Please zip and upload the generated result to [codalab server](https://competitions.codalab.org/competitions/20128#participate-submit_results).
+**YouTube-VIS 2019**: A json file will be saved in `../Results' folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/20128#participate-submit_results).
 
 ## TODOs
 ----------------
