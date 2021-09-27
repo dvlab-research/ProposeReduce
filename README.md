@@ -91,4 +91,4 @@ If you find this work useful in your research, please cite:
 If you have any questions regarding the repo, please feel free to contact me (huaijialin@gmail.com) or create an issue.
 
 ## Acknowledgments
-Parts of this code were derived from [MMDetection](https://github.com/open-mmlab/mmdetection), [MaskTrackRCNN](https://github.com/youtubevos/MaskTrackRCNN), [STM](https://github.com/seoungwugoh/STM), [MMCV](https://github.com/open-mmlab/mmcv) and [COCOAPI](https://github.com/youtubevos/cocoapi).
+This repo is based on [MMDetection](https://github.com/open-mmlab/mmdetection), [MaskTrackRCNN](https://github.com/youtubevos/MaskTrackRCNN), [STM](https://github.com/seoungwugoh/STM), [MMCV](https://github.com/open-mmlab/mmcv) and [COCOAPI](https://github.com/youtubevos/cocoapi).
