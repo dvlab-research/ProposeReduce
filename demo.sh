@@ -1,7 +1,6 @@
 ep=4
 key_num=5
 name=test_masktrackrcnn_FullPre_FullTrain
-save_path=../Results_ep${ep}/
 #    --use-img # blending img and mask
 python3 tools/demo.py \
     configs/SeqMaskRCNN/seq_mask_rcnn_r101_fpn_1x_youtubevos19_ftstage.py \
