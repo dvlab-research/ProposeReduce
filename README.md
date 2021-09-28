@@ -1,4 +1,11 @@
-# Video Instance Segmentation with a Propose-Reduce Paradigm ([ICCV 2021](https://arxiv.org/abs/2103.13746))
+# Propose-Reduce VIS
+This repo contains the official implementation for the paper:
+
+**Video Instance Segmentation with a Propose-Reduce Paradigm**
+
+*Huaijia Lin\*, Ruizheng Wu\*, Shu Liu, Jiangbo Lu, Jiaya Jia*
+
+ICCV 2021 | [Paper](https://arxiv.org/abs/2103.13746) 
  
 ![TeaserImage](https://github.com/HuaijiaLin/ProposeReduce-debug/blob/main/.images/teaser.gif)
  
