@@ -7,15 +7,15 @@ This repo contains the official implementation for the paper:
 
 ICCV 2021 | [Paper](https://arxiv.org/abs/2103.13746) 
  
-![TeaserImage](https://github.com/HuaijiaLin/ProposeReduce-debug/blob/main/.images/teaser.gif)
+![TeaserImage](https://github.com/dvlab-research/ProposeReduce/blob/main/.images/teaser.gif)
  
 ## Installation
 Please refer to [INSTALL.md](INSTALL.md).
 
 ## Demo
 You can compute the VIS results for your own videos.
-1. Download [pretrained weight](https://github.com/HuaijiaLin/ProposeReduce-debug/blob/main/README.md#results).
-2. Put example videos in 'demo/inputs'. We support two types of inputs, *frames* directories or *.mp4* files (see [example](https://github.com/HuaijiaLin/ProposeReduce-debug/tree/main/demo/inputs) for details).
+1. Download [pretrained weight](https://github.com/dvlab-research/ProposeReduce#results).
+2. Put example videos in 'demo/inputs'. We support two types of inputs, *frames* directories or *.mp4* files (see [example](https://github.com/dvlab-research/ProposeReduce/tree/main/demo/inputs) for details).
 3. Run the following script and obtain the results in ***demo/outputs***.
 ```
 sh demo.sh
