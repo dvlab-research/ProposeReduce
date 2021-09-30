@@ -77,7 +77,7 @@ def coco_classes():
         'scissors', 'teddy_bear', 'hair_drier', 'toothbrush'
     ]
 
-def ytvos19_classes():
+def ytvis19_classes():
     return [
         'person','giant_panda','lizard','parrot','skateboard','sedan',
         'ape','dog','snake','monkey','hand','rabbit','duck','cat','cow','fish',
@@ -87,13 +87,24 @@ def ytvos19_classes():
         'tennis_racket'
     ]
 
+def ytvis21_classes():
+    return [
+        'airplane', 'bear', 'bird', 'boat', 'car', 'cat', 'cow', 'deer', 'dog',
+        'duck', 'earless_seal', 'elephant', 'fish', 'flying_disc', 'fox', 'frog',
+        'giant_panda', 'giraffe', 'horse', 'leopard', 'lizard', 'monkey', 'motorbike',
+        'mouse', 'parrot', 'person', 'rabbit', 'shark', 'skateboard', 'snake', 'snowboard',
+        'squirrel', 'surfboard', 'tennis_racket', 'tiger', 'train', 'truck', 'turtle', 'whale',
+        'zebra'
+    ]
+
 
 dataset_aliases = {
     'voc': ['voc', 'pascal_voc', 'voc07', 'voc12'],
     'imagenet_det': ['det', 'imagenet_det', 'ilsvrc_det'],
     'imagenet_vid': ['vid', 'imagenet_vid', 'ilsvrc_vid'],
     'coco': ['coco', 'mscoco', 'ms_coco'],
-    'ytvos19': ['ytvos19']
+    'ytvis19': ['ytvis19'],
+    'ytvis21': ['ytvis21']
 }
 
 

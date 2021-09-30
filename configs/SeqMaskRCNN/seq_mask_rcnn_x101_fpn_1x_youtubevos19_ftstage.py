@@ -109,6 +109,7 @@ test_cfg = dict(
         mask_thr_binary=0.5),
     paradigm=dict(
         type='Propose_Reduce',
+        classes='ytvis21',
         propose=dict(
             key_num=5,
             mem_step=1),

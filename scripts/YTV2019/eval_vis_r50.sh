@@ -1,6 +1,6 @@
 key_num=5
 name=test_masktrackrcnn_FullPre_FullTrain
-save_path=../Results
+save_path=../Results_ytv19
 #    --show \ # see visual results
 python3 tools/test_video_seq.py \
     configs/SeqMaskRCNN/seq_mask_rcnn_r50_fpn_1x_youtubevos19_ftstage.py \

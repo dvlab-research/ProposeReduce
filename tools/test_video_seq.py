@@ -92,11 +92,12 @@ def single_test(args, infer_paradigm, data_loader, show=False, save_path=''):
             tot_frames.append(len(buffer_data))
 
             ## show
-            cur_save_dir = osp.join(args.save_dir, '%s-seqs' % proj_name, vid_name)
-            infer_paradigm.show_result(buffer_data, buffer_meta, seq_masks, seq_scores, dataset.img_norm_cfg,
-                                       save_dir=cur_save_dir)
-            cur_annts = save_jsons(seq_masks, seq_scores, img_meta)
+            if show:
+                cur_save_dir = osp.join(args.save_dir, '%s-seqs' % proj_name, vid_name)
+                infer_paradigm.show_result(buffer_data, buffer_meta, seq_masks, seq_scores, dataset.img_norm_cfg,
+                                           save_dir=cur_save_dir)
 
+            cur_annts = save_jsons(seq_masks, seq_scores, img_meta)
             annotations += cur_annts
 
             buffer_data, buffer_meta = [], []
@@ -179,7 +180,7 @@ def main():
 
     ## paradigm 
     if cfg.test_cfg.paradigm.type == 'Propose_Reduce':
-        infer_paradigm = ProposeReduce(model.eval(), cfg.test_cfg.paradigm, get_classes('ytvos19'))
+        infer_paradigm = ProposeReduce(model.eval(), cfg.test_cfg.paradigm, get_classes(cfg.test_cfg.paradigm.classes))
     else:
         raise NotImplemented
 
