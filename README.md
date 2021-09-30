@@ -16,7 +16,7 @@ Please refer to [INSTALL.md](INSTALL.md).
 You can compute the VIS results for your own videos.
 1. Download [pretrained weight](https://github.com/HuaijiaLin/ProposeReduce-debug/blob/main/README.md#results).
 2. Put example videos in 'demo/inputs'. We support two types of inputs, *frames* directories or *.mp4* files (see [example](https://github.com/HuaijiaLin/ProposeReduce-debug/tree/main/demo/inputs) for details).
-3. Run the following script and obtain the results in 'demo/outputs'.
+3. Run the following script and obtain the results in ***demo/outputs***.
 ```
 sh demo.sh
 ```
@@ -26,7 +26,7 @@ sh demo.sh
 
 (2) Download the videos and jsons of *val* set from [YouTube-VIS 2021](https://competitions.codalab.org/competitions/28988#participate-get_data)
 
-(3) Symlink the corresponding dataset and json files to the 'data' folder
+(3) Symlink the corresponding dataset and json files to the ***data*** folder
 ```
 data
 ├── valset_ytv19 --> /path/to/ytv2019/vos/valid/JPEGImages/ 
@@ -39,7 +39,7 @@ data
 We provide the results of several pretrained models and corresponding scripts on different backbones.
 The results have slight differences from the paper because we make minor modifications to the inference codes.
 
-Download the pretrained models and put them in 'pretrained' folder.
+Download the pretrained models and put them in ***pretrained*** folder.
 
 <table><tbody>
 <!-- START TABLE -->
