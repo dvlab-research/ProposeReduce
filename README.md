@@ -28,6 +28,9 @@ sh demo.sh
 
 (3) Symlink the corresponding dataset and json files to the ***data*** folder
 ```
+mkdir data
+```
+```
 data
 ├── valset_ytv19 --> /path/to/ytv2019/vos/valid/JPEGImages/ 
 ├── valid_ytv19.json --> /path/to/ytv2019/vis/valid.json
@@ -40,6 +43,9 @@ We provide the results of several pretrained models and corresponding scripts on
 The results have slight differences from the paper because we make minor modifications to the inference codes.
 
 Download the pretrained models and put them in ***pretrained*** folder.
+```
+mkdir pretrained
+```
 
 <table><tbody>
 <!-- START TABLE -->
