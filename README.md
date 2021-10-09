@@ -53,6 +53,7 @@ mkdir pretrained
 <th valign="center">Dataset</th>
 <th valign="center">Method</th>
 <th valign="center">Backbone</th>
+ <th valign="center"> <a href=https://github.com/dvlab-research/ProposeReduce#todos>CA Reduce</a> </th>
 <th valign="center">AP</th>
 <th valign="center">AR@10</th>
 <th valign="bottom">download</th>
@@ -60,41 +61,91 @@ mkdir pretrained
 <tr><td align="center">YouTube-VIS 2019</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNet-50</td>
+<td align="center"></td>
 <td align="center"> 40.8 </td>
 <td align="center"> 49.9 </td>
 <td align="center"> <a href="https://drive.google.com/file/d/1P3HiwCavjRJJePuF-4D2GDQKwWT8E_LZ/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2019/eval_vis_r50.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+ 
+<tr><td align="center">YouTube-VIS 2019</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNet-50</td>
+<td align="center"> &check; </td>
+<td align="center"> 42.5 </td>
+<td align="center"> 56.8 </td>
+<td align="center"> <a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2019/CateAwareReduce/eval_vis_r50.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
   
 <tr><tr><td align="center">YouTube-VIS 2019</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNet-101</td>
+<td align="center"></td>
 <td align="center"> 43.8 </td>
 <td align="center"> 52.7 </td>
-<td align="center"> <a href="https://drive.google.com/file/d/1SmcJsIqluzjuH-uKCNs1ybNqvQClIqai/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2019/eval_vis_x101.sh">scripts</a> </td>
+<td align="center"> <a href="https://drive.google.com/file/d/1SmcJsIqluzjuH-uKCNs1ybNqvQClIqai/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2019/eval_vis_r101.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+ 
+<tr><tr><td align="center">YouTube-VIS 2019</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNet-101</td>
+<td align="center"> &check; </td>
+<td align="center"> 45.2 </td>
+<td align="center"> 59.0 </td>
+<td align="center"> <a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2019/CateAwareReduce/eval_vis_r101.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
   
 <tr><tr><td align="center">YouTube-VIS 2019</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNeXt-101</td>
+<td align="center"></td>
 <td align="center"> 47.6 </td>
 <td align="center"> 56.7 </td>
 <td align="center"> <a href="https://drive.google.com/file/d/1lwjdGhjeA8rFtHtYrJbsVPY6r49jGGbN/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2019/eval_vis_x101.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
  
+<tr><tr><td align="center">YouTube-VIS 2019</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNeXt-101</td>
+<td align="center"> &check; </td> 
+<td align="center"> 48.8 </td>
+<td align="center"> 62.2 </td>
+<td align="center"> <a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2019/CateAwareReduce/eval_vis_x101.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+ 
 <tr><td align="center">YouTube-VIS 2021</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNet-50</td>
+<td align="center"></td>  
 <td align="center"> 39.6 </td>
 <td align="center"> 47.5 </td>
 <td align="center"> <a href="https://drive.google.com/file/d/12NQMY59USqMi7--zyZytKVaUmf0MGegP/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2021/eval_vis_r50.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
  
+<tr><td align="center">YouTube-VIS 2021</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNet-50</td>
+<td align="center"> &check; </td>  
+<td align="center"> 41.7 </td>
+<td align="center"> 54.9 </td>
+<td align="center"> <a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2021/CateAwareReduce/eval_vis_r50.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+ 
 <tr><tr><td align="center">YouTube-VIS 2021</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNeXt-101</td>
+<td align="center"> </td>  
 <td align="center"> 45.6 </td>
 <td align="center"> 52.9 </td>
 <td align="center"> <a href="https://drive.google.com/file/d/1aOHPmVkoF9ZeBOSORlybPBqpZoIqg2SA/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2021/eval_vis_x101.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+ 
+<tr><tr><td align="center">YouTube-VIS 2021</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNeXt-101</td>
+<td align="center"> &check; </td>  
+<td align="center"> 47.2 </td>
+<td align="center"> 57.6 </td>
+<td align="center"> <a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2021/CateAwareReduce/eval_vis_x101.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
 
 </tbody></table>
@@ -108,7 +159,7 @@ mkdir pretrained
 ----------------
   - [x] Results on YouTube-VIS 2021
   - [ ] Results on DAVIS-UVOS
-  - [ ] [Category-Aware Sequence Reduction](https://youtube-vos.org/assets/challenge/2021/reports/VIS_4_Lin.pdf)
+  - [x] [Category-Aware Sequence Reduction (CA Reduce)](https://youtube-vos.org/assets/challenge/2021/reports/VIS_4_Lin.pdf)
   - [ ] Training Codes
 
 ## Citation
