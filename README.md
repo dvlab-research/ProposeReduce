@@ -112,6 +112,15 @@ mkdir pretrained
 <td align="center"> <a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2019/CateAwareReduce/eval_vis_x101.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
  
+<tr><tr><td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td> 
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<!-- <td align="center"> To be released </td> -->
+ 
 <tr><td align="center">YouTube-VIS 2021</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNet-50</td>
@@ -156,7 +165,6 @@ mkdir pretrained
 **YouTube-VIS 2021**: A json file will be saved in `../Results_ytv21' folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/28988#participate-submit_results).
 
 ## TODOs
-----------------
   - [x] Results on YouTube-VIS 2021
   - [ ] Results on DAVIS-UVOS
   - [x] [Category-Aware Sequence Reduction (CA Reduce)](https://youtube-vos.org/assets/challenge/2021/reports/VIS_4_Lin.pdf)
