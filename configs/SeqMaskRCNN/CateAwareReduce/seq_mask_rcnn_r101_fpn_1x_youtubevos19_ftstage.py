@@ -114,7 +114,12 @@ test_cfg = dict(
         reduce=dict(
             type='seq_nms',
             score_thr=0.05,
-            iou_thr=0.5)
+            iou_thr=0.9),
+        cate_reduce=dict(
+            type='seq_soft_nms',
+            max_seq_num=100,
+            score_thr=0.001,
+            iou_thr=0.5),
         ))
 # dataset settings
 dataset_type = 'YTVOSDataset'

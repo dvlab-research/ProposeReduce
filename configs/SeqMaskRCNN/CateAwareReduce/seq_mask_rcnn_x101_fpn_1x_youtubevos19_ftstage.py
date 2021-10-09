@@ -1,10 +1,12 @@
 # model settings
 model = dict(
     type='SeqMaskRCNN',
-    pretrained='modelzoo://resnet101',
+    pretrained='open-mmlab://resnext101_64x4d',
     backbone=dict(
-        type='ResNet',
+        type='ResNeXt',
         depth=101,
+        groups=64,
+        base_width=4,
         num_stages=4,
         out_indices=(0, 1, 2, 3),
         frozen_stages=1,
@@ -114,7 +116,12 @@ test_cfg = dict(
         reduce=dict(
             type='seq_nms',
             score_thr=0.05,
-            iou_thr=0.5)
+            iou_thr=0.9),
+        cate_reduce=dict(
+            type='seq_soft_nms',
+            max_seq_num=100,
+            score_thr=0.001,
+            iou_thr=0.5),
         ))
 # dataset settings
 dataset_type = 'YTVOSDataset'
@@ -122,7 +129,7 @@ data_root = 'data/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 data = dict(
-    imgs_per_gpu=3,
+    imgs_per_gpu=2,
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
@@ -184,7 +191,7 @@ log_config = dict(
 total_epochs = 4
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = '../work_dirs/seq_mask_rcnn_r101_fpn_1x_youtubevos19_ftstage'
+work_dir = '../work_dirs/seq_mask_rcnn_x101_fpn_1x_youtubevos19_ftstage'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]

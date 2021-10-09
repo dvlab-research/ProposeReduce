@@ -27,7 +27,7 @@ import json
 
 from ProposeReduce import ProposeReduce
 
-def save_jsons(seq_masks, seq_scores, img_meta):
+def save_jsons(seq_masks, seq_scores, img_meta, score_thr=0.05):
     cur_annts = []
     seq_scores = seq_scores.cpu()
     ori_shape = img_meta['ori_shape'][:2]
@@ -47,7 +47,7 @@ def save_jsons(seq_masks, seq_scores, img_meta):
             cur_seg['counts'] = str(cur_seg['counts'], encoding='utf-8')
             segs.append(cur_seg) 
         for c in range(1, seq_scores.shape[1]):
-            if seq_scores[k,c] >= 0.05:
+            if seq_scores[k,c] >= score_thr:
                 annt = dict()
                 annt['video_id'] = int(img_meta['video_id'])+1
                 annt['category_id'] = int(c)
@@ -97,7 +97,7 @@ def single_test(args, infer_paradigm, data_loader, show=False, save_path=''):
                 infer_paradigm.show_result(buffer_data, buffer_meta, seq_masks, seq_scores, dataset.img_norm_cfg,
                                            save_dir=cur_save_dir)
 
-            cur_annts = save_jsons(seq_masks, seq_scores, img_meta)
+            cur_annts = save_jsons(seq_masks, seq_scores, img_meta, args.score_thr)
             annotations += cur_annts
 
             buffer_data, buffer_meta = [], []
@@ -143,10 +143,11 @@ def parse_args():
         help='eval types')
     parser.add_argument('--show', action='store_true', help='show results')
     parser.add_argument('--max-agg', action='store_true')
-    parser.add_argument('--score-thr', type=int, default=0.1)
+    parser.add_argument('--score-thr', type=float, default=0.05)
     parser.add_argument('--save-dir', type=str)
     parser.add_argument('--key-num', type=int)
     parser.add_argument('--network', type=str, default='x101')
+    parser.add_argument('--use-cate-reduce', action='store_true')
     args = parser.parse_args()
     return args
 
@@ -169,7 +170,7 @@ def main():
         cfg.model, train_cfg=None, test_cfg=cfg.test_cfg)
     load_checkpoint(model, args.checkpoint)
     model = MMDataParallel(model, device_ids=[0])
-    
+
     data_loader = build_dataloader(
         dataset,
         imgs_per_gpu=1,
@@ -178,9 +179,10 @@ def main():
         dist=False,
         shuffle=False)
 
-    ## paradigm 
+    ## paradigm
     if cfg.test_cfg.paradigm.type == 'Propose_Reduce':
-        infer_paradigm = ProposeReduce(model.eval(), cfg.test_cfg.paradigm, get_classes(cfg.test_cfg.paradigm.classes))
+        infer_paradigm = ProposeReduce(model.eval(), cfg.test_cfg.paradigm, get_classes(cfg.test_cfg.paradigm.classes),
+                                       use_cate_reduce=args.use_cate_reduce)
     else:
         raise NotImplemented
 

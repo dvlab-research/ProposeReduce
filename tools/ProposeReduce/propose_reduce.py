@@ -17,9 +17,10 @@ from mmdet.core import tensor2imgs
 from . import utils
 import cv2
 from PIL import Image
+import math
 
 class ProposeReduce(nn.Module):
-    def __init__(self, model, cfg, class_names):
+    def __init__(self, model, cfg, class_names, use_cate_reduce=False):
         super(ProposeReduce, self).__init__() 
         self.model = model
         self.buffer_x = None
@@ -27,7 +28,9 @@ class ProposeReduce(nn.Module):
         self.propose = cfg.propose
         self.reduce = cfg.reduce
         self.class_names = class_names
-        print(self.propose)
+        self.use_cate_reduce = use_cate_reduce
+        if use_cate_reduce:
+            self.cate_reduce = cfg.cate_reduce
 
     def forward(self, buffer_data, buffer_meta):
         # initilize buffer for saving memory
@@ -59,6 +62,9 @@ class ProposeReduce(nn.Module):
         for k,cur_id in enumerate(seq_id):
             ret_seq_masks.append(seq_masks[cur_id])
         assert len(ret_seq_masks)  == seq_scores.shape[0], (len(ret_seq_masks), seq_scores.shape[0])
+
+        if self.use_cate_reduce:
+            ret_seq_masks, seq_scores = self.cate_aware_reduce(ret_seq_masks, seq_scores)
 
         return ret_seq_masks, seq_scores
 
@@ -222,6 +228,47 @@ class ProposeReduce(nn.Module):
         seq_id = torch.LongTensor(seq_id).cuda()
         return seq_id
 
+    def seq_soft_nms(self, seq_masks, seq_scores, max_seq_num, score_thr, iou_thr):
+        assert len(seq_scores.shape) == 1, seq_scores.shape # [K]
+        assert len(seq_masks) == seq_scores.shape[0], (len(seq_masks), seq_scores.shape)
+        flag = [False for _ in range(seq_scores.shape[0])]
+        seq_id = []
+        ret_seq_scores = []
+        for _ in range(seq_scores.shape[0]):
+            max_idx = -1
+            for k in range(seq_scores.shape[0]):
+                if not flag[k] and (max_idx == -1 or seq_scores[k] > seq_scores[max_idx]):
+                    max_idx = k
+            if max_idx == -1:
+                break
+            if seq_scores[max_idx] < score_thr:
+                break
+            flag[max_idx] = True
+            seq_id.append(max_idx)
+            ret_seq_scores.append(seq_scores[max_idx][None])
+            if len(seq_id) >= max_seq_num:
+                break
+            for k in range(seq_scores.shape[0]):
+                if not flag[k] and seq_scores[k] >= score_thr:
+                    cur_iou = utils.seq_match_iou_rle(seq_masks[max_idx], seq_masks[k])
+                    seq_scores[k] *= math.exp(-(cur_iou**2)/iou_thr)
+        if len(seq_id) > 0:
+            ret_seq_scores = torch.cat(ret_seq_scores, dim=0)
+        else:
+            ret_seq_scores = None
+        return seq_id, ret_seq_scores
+
+    def cate_aware_reduce(self, seq_masks, seq_scores):
+        res_seq_scores = seq_scores.clone()
+        for c in range(1, seq_scores.shape[1]):
+            cur_seq_id, cur_seq_scores = self.seq_soft_nms(seq_masks, seq_scores[:, c].clone(), score_thr=self.cate_reduce.score_thr, 
+                                                           max_seq_num=self.cate_reduce.max_seq_num, iou_thr=self.cate_reduce.iou_thr)
+            for k in range(res_seq_scores.shape[0]):
+                if k not in cur_seq_id:
+                    res_seq_scores[k,c] = -1 # abandon
+            for idx,k in enumerate(cur_seq_id):
+                res_seq_scores[k,c] = cur_seq_scores[idx]
+        return seq_masks, res_seq_scores
 
     def show_result(self, 
                     buffer_data,
