@@ -13,7 +13,7 @@ conda create -n propose_reduce python=3.6
 conda activate propose_reduce
 conda install pytorch==1.1.0 torchvision==0.3.0 cudatoolkit=10.0 -c pytorch
 mkdir propose_reduce && cd propose_reduce
-git clone https://github.com/HuaijiaLin/ProposeReduce-debug.git
+git clone https://github.com/dvlab-research/ProposeReduce.git
 ``` 
 ### Install MMDetection ###
 ```shell
