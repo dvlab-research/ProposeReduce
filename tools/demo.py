@@ -180,7 +180,7 @@ def main():
     cfg.test_cfg.paradigm.propose.key_num = args.key_num
     cfg.test_cfg.paradigm.propose.mem_step = args.mem_step
     if cfg.test_cfg.paradigm.type == 'Propose_Reduce':
-        infer_paradigm = ProposeReduce(model.eval(), cfg.test_cfg.paradigm, get_classes('ytvos19'))
+        infer_paradigm = ProposeReduce(model.eval(), cfg.test_cfg.paradigm, get_classes(cfg.test_cfg.paradigm.classes))
     else:
         raise NotImplemented
 
