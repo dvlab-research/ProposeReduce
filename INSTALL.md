@@ -3,6 +3,7 @@
 ### Requirements
 
 - Linux
+- CUDA 10.0
 - Python 3.6+
 - PyTorch 1.1
 - Cython
