@@ -36,6 +36,8 @@ data
 ├── valid_ytv19.json --> /path/to/ytv2019/vis/valid.json
 ├── valset_ytv21 --> /path/to/ytv2021/vis/valid/JPEGImages/ 
 ├── valid_ytv21.json --> /path/to/ytv2021/vis/valid/instances.json
+├── trainvalset_davis --> /path/to/DAVIS-UnVOS/DAVIS-trainval/JPEGImages/480p/ 
+├── valid_davis.json --> /path/to/download/valid_davis.json
 ```
 
 ## Results
@@ -159,14 +161,38 @@ mkdir pretrained
 
 </tbody></table>
 
+<table><tbody>
+<!-- START TABLE -->
+<!-- TABLE HEADER -->
+<th valign="center">Dataset</th>
+<th valign="center">Method</th>
+<th valign="center">Backbone</th>
+<th valign="center">J&F</th>
+<th valign="center">J</th>
+<th valign="center">F</th>
+<th valign="bottom">download</th>
+ 
+<tr><tr><td align="center">DAVIS-UVOS</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNeXt-101</td>
+<td align="center">  </td>  
+<td align="center">  </td>
+<td align="center"></td>
+<td align="center"> <a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2021/CateAwareReduce/eval_vis_x101.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+ 
+ </tbody></table>
+
 ### Evaluation
 **YouTube-VIS 2019**: A json file will be saved in `../Results_ytv19' folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/20128#participate-submit_results).
 
 **YouTube-VIS 2021**: A json file will be saved in `../Results_ytv21' folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/28988#participate-submit_results).
 
+**DAVIS-UVOS**: The colored masks will be saved in `../Results_davis' folder. Please use the [official code](https://github.com/davisvideochallenge/davis2017-evaluation#evaluate-davis-2017-unsupervised) for evaluation.
+
 ## TODOs
   - [x] Results on YouTube-VIS 2021
-  - [ ] Results on DAVIS-UVOS
+  - [x] Results on DAVIS-UVOS
   - [x] [Category-Aware Sequence Reduction (CA Reduce)](https://youtube-vos.org/assets/challenge/2021/reports/VIS_4_Lin.pdf)
   - [ ] Training Codes
 
