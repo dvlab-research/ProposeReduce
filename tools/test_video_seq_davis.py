@@ -24,17 +24,19 @@ from mmdet.models import build_detector, detectors
 from tqdm import tqdm
 import timeit
 import json
+from PIL import Image
 
 from ProposeReduce import ProposeReduce
 
-def save_jsons(seq_masks, seq_scores, img_meta, score_thr=0.05):
-    cur_annts = []
+def save_PIL(seq_masks, seq_scores, buffer_img_meta, save_dir, score_thr=0.001):
     seq_scores = seq_scores.cpu()
-    ori_shape = img_meta['ori_shape'][:2]
-    img_shape = img_meta['img_shape'][:2]
-    for k in range(seq_scores.shape[0]):
-        segs = []
-        for tp in range(len(seq_masks[k])):
+    palette = Image.open('.palette/00000.png').getpalette()
+    for tp in range(len(seq_masks[0])):
+        img_meta = buffer_img_meta[tp]
+        ori_shape = img_meta['ori_shape'][:2]
+        img_shape = img_meta['img_shape'][:2]
+        res_mask = []
+        for k in range(seq_scores.shape[0]):
             cur_mask = mask_util.decode(seq_masks[k][tp])
             assert len(cur_mask.shape) == 2, (img_meta,  cur_mask.shape)
             if cur_mask.shape != img_shape:
@@ -43,18 +45,14 @@ def save_jsons(seq_masks, seq_scores, img_meta, score_thr=0.05):
                 cur_mask = torch.FloatTensor(cur_mask).cuda()
                 cur_mask = F.interpolate(cur_mask[None,None], ori_shape, mode='bilinear', align_corners=False)[0,0]
                 cur_mask = (cur_mask>0.5).cpu().numpy().astype(np.uint8)
-            cur_seg = mask_util.encode(np.array(cur_mask, order='F'))
-            cur_seg['counts'] = str(cur_seg['counts'], encoding='utf-8')
-            segs.append(cur_seg) 
-        for c in range(1, seq_scores.shape[1]):
-            if seq_scores[k,c] >= score_thr:
-                annt = dict()
-                annt['video_id'] = int(img_meta['video_id'])+1
-                annt['category_id'] = int(c)
-                annt['score'] = float(seq_scores[k,c].item())
-                annt['segmentations'] = segs
-                cur_annts.append(annt)
-    return cur_annts
+            res_mask.append(cur_mask.astype(np.uint8))
+        res_mask = np.stack(res_mask, axis=0)
+        res_mask = np.concatenate((np.zeros(res_mask.shape[1:], dtype=np.uint8)[None], res_mask), axis=0)
+        res_mask = np.argmax(res_mask, axis=0).astype(np.uint8)
+        # save
+        res_mask = Image.fromarray(res_mask)
+        res_mask.putpalette(palette)
+        res_mask.save(osp.join(save_dir, '%s.png' % img_meta['frame_name']))
 
 def single_test(args, infer_paradigm, data_loader, show=False, save_path=''):
     dataset = data_loader.dataset
@@ -64,10 +62,9 @@ def single_test(args, infer_paradigm, data_loader, show=False, save_path=''):
     tot_times = []
     tot_frames = []
     print('proj_name', proj_name)
-    annotations = []
     prog_bar = mmcv.ProgressBar(len(dataset))
     for i, data in enumerate(data_loader):
-        img_meta = data['img_meta'][0].data[0][0] 
+        img_meta = data['img_meta'][0].data[0][0]
         buffer_meta.append(img_meta)
         buffer_data.append(data)
 
@@ -76,7 +73,8 @@ def single_test(args, infer_paradigm, data_loader, show=False, save_path=''):
             ts = timeit.default_timer()
 
             vid_name = img_meta['video_name']
-            save_dir_json = osp.join(args.save_dir, '%s-seqs_json' % proj_name)
+            save_dir_PIL = osp.join(args.save_dir, '%s-seqs_PIL' % proj_name, vid_name)
+            os.makedirs(save_dir_PIL, exist_ok=True)
 
             seq_masks, seq_scores = infer_paradigm(buffer_data, buffer_meta)
             if seq_masks is None:
@@ -97,8 +95,7 @@ def single_test(args, infer_paradigm, data_loader, show=False, save_path=''):
                 infer_paradigm.show_result(buffer_data, buffer_meta, seq_masks, seq_scores, dataset.img_norm_cfg,
                                            save_dir=cur_save_dir)
 
-            cur_annts = save_jsons(seq_masks, seq_scores, img_meta, args.score_thr)
-            annotations += cur_annts
+            save_PIL(seq_masks, seq_scores, buffer_meta, save_dir_PIL, args.score_thr)
 
             buffer_data, buffer_meta = [], []
 
@@ -109,9 +106,6 @@ def single_test(args, infer_paradigm, data_loader, show=False, save_path=''):
     print('frames', sum(tot_frames), len(tot_frames))
     print('times', sum(tot_times), len(tot_times))
     print('avg-time', sum(tot_times) / sum(tot_frames))
-    print('annt-len', len(annotations))
-    os.makedirs(save_dir_json, exist_ok=True)
-    json.dump(annotations, open('%s/results.json' % save_dir_json, 'w'))
 
 
 def parse_args():

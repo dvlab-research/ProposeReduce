@@ -97,6 +97,10 @@ def ytvis21_classes():
         'zebra'
     ]
 
+def davis_classes():
+    return [
+        'instance'
+    ]
 
 dataset_aliases = {
     'voc': ['voc', 'pascal_voc', 'voc07', 'voc12'],
@@ -104,7 +108,8 @@ dataset_aliases = {
     'imagenet_vid': ['vid', 'imagenet_vid', 'ilsvrc_vid'],
     'coco': ['coco', 'mscoco', 'ms_coco'],
     'ytvis19': ['ytvis19'],
-    'ytvis21': ['ytvis21']
+    'ytvis21': ['ytvis21'],
+    'davis': ['davis']
 }
 
 

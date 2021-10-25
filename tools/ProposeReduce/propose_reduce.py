@@ -31,6 +31,7 @@ class ProposeReduce(nn.Module):
         self.use_cate_reduce = use_cate_reduce
         if use_cate_reduce:
             self.cate_reduce = cfg.cate_reduce
+        assert ('mem_step' in self.propose) ^ ('mem_num' in self.propose)
 
     def forward(self, buffer_data, buffer_meta):
         # initilize buffer for saving memory
@@ -38,6 +39,7 @@ class ProposeReduce(nn.Module):
 
         # sequence propose
         key_step = (len(buffer_data)-1) * 1. / (self.propose.key_num-1)
+
         seq_masks, seq_scores = [], []
         for idx_k in range(self.propose.key_num):
             t = int(key_step * idx_k)
@@ -56,8 +58,16 @@ class ProposeReduce(nn.Module):
         # sequence reduce
         seq_scores = torch.stack(seq_scores, dim=0)
         seq_max_scores = seq_scores[:,1:].max(dim=1)[0]
-        seq_id = self.seq_nms(seq_masks, seq_max_scores)
-        seq_scores = seq_scores[seq_id]
+        ## for davis, run seq_soft_nms here
+        if self.reduce.type == 'seq_nms':
+            seq_id = self.seq_nms(seq_masks, seq_max_scores)
+            seq_scores = seq_scores[seq_id]
+        elif self.reduce.type == 'seq_soft_nms':
+            # assert 0, (len(seq_masks), seq_max_scores.shape)
+            seq_id, seq_scores = self.seq_soft_nms(seq_masks, seq_max_scores.clone(), score_thr=self.reduce.score_thr, 
+                                                   max_seq_num=self.reduce.max_seq_num, iou_thr=self.reduce.iou_thr)
+        else:
+            raise NotImplemented(self.reduce.type)
         ret_seq_masks = []
         for k,cur_id in enumerate(seq_id):
             ret_seq_masks.append(seq_masks[cur_id])
@@ -108,6 +118,10 @@ class ProposeReduce(nn.Module):
             cur_pred = torch.softmax(cur_pred, dim=1)
         cur_pred = cur_pred[0,1:] # [K,H,W]
         det_pred = [cur_pred]
+        if 'mem_num' in self.propose:
+            mem_step = max(len(self.buffer_data) // self.propose.mem_num, 1)
+        else:
+            mem_step = self.propose.mem_step
         # |-->
         cur_mem_key = mem_key.clone()
         cur_mem_value = mem_value.clone()
@@ -120,7 +134,7 @@ class ProposeReduce(nn.Module):
                 cur_pred = torch.softmax(cur_pred, dim=1)
             cur_pred = cur_pred[0,1:] # [K,H,W]
             det_pred.append(cur_pred)
-            if (tp-t) % self.propose.mem_step != 0:
+            if (tp-t) % mem_step != 0:
                 continue
             with torch.no_grad(): 
                 data_tp['op'] = 'prop-memorize'
@@ -142,7 +156,7 @@ class ProposeReduce(nn.Module):
                 cur_pred = torch.softmax(cur_pred, dim=1)
             cur_pred = cur_pred[0,1:] # [K,H,W]
             det_pred = [cur_pred] + det_pred
-            if (t-tp) % self.propose.mem_step != 0:
+            if (t-tp) % mem_step != 0:
                 continue
             with torch.no_grad():
                 data_tp['op'] = 'prop-memorize'
