@@ -204,7 +204,7 @@ mkdir pretrained
 
 **YouTube-VIS 2021**: A json file will be saved in ***../Results_ytv21*** folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/28988#participate-submit_results).
 
-**DAVIS-UVOS**: The colored masks will be saved in ***../Results_davis*** folder. Please use the [official code](https://github.com/davisvideochallenge/davis2017-evaluation#evaluate-davis-2017-unsupervised) for evaluation.
+**DAVIS-UVOS**: Color masks will be saved in ***../Results_davis*** folder. Please use the [official code](https://github.com/davisvideochallenge/davis2017-evaluation#evaluate-davis-2017-unsupervised) for evaluation.
 
 ## TODOs
   - [x] Results on YouTube-VIS 2021
