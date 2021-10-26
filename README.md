@@ -31,7 +31,7 @@ sh demo.sh
 
 (3) Download the *trainval* set of [DAVIS-UVOS](https://davischallenge.org/davis2017/code.html)
 
-(4) Download other pre-computed jsons from 
+(4) Download other pre-computed jsons from [data](https://drive.google.com/drive/folders/1E0xpD6DwWwFzUUIo9dgG7T9-OlqDDOKs?usp=sharing)
 
 (5) Symlink the corresponding dataset and json files to the ***data*** folder
 ```
@@ -44,7 +44,7 @@ data
 ├── valset_ytv21 --> /path/to/ytv2021/vis/valid/JPEGImages/ 
 ├── valid_ytv21.json --> /path/to/ytv2021/vis/valid/instances.json
 ├── trainvalset_davis --> /path/to/DAVIS-UnVOS/DAVIS-trainval/JPEGImages/480p/ 
-├── valid_davis.json --> /path/to/download/valid_davis.json
+├── valid_davis.json --> /path/to/pre-computed/valid_davis.json
 ```
 
 ## Results
