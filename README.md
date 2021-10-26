@@ -14,7 +14,10 @@ Please refer to [INSTALL.md](INSTALL.md).
 
 ## Demo
 You can compute the VIS results for your own videos.
-1. Download [pretrained weight](https://github.com/dvlab-research/ProposeReduce#results).
+1. Download a pretrained [ResNet-101](https://drive.google.com/file/d/1SmcJsIqluzjuH-uKCNs1ybNqvQClIqai/view?usp=sharing) and put it in ***pretrained*** folder.
+```
+mkdir pretrained
+```
 2. Put example videos in 'demo/inputs'. We support two types of inputs, *frames* directories or *.mp4* files (see [example](https://github.com/dvlab-research/ProposeReduce/tree/main/demo/inputs) for details).
 3. Run the following script and obtain the results in ***demo/outputs***.
 ```
@@ -26,7 +29,11 @@ sh demo.sh
 
 (2) Download the videos and jsons of *val* set from [YouTube-VIS 2021](https://competitions.codalab.org/competitions/28988#participate-get_data)
 
-(3) Symlink the corresponding dataset and json files to the ***data*** folder
+(3) Download the *trainval* set of [DAVIS-UVOS](https://davischallenge.org/davis2017/code.html)
+
+(4) Download other pre-computed jsons from [data](https://drive.google.com/drive/folders/1E0xpD6DwWwFzUUIo9dgG7T9-OlqDDOKs?usp=sharing)
+
+(5) Symlink the corresponding dataset and json files to the ***data*** folder
 ```
 mkdir data
 ```
@@ -36,6 +43,8 @@ data
 ├── valid_ytv19.json --> /path/to/ytv2019/vis/valid.json
 ├── valset_ytv21 --> /path/to/ytv2021/vis/valid/JPEGImages/ 
 ├── valid_ytv21.json --> /path/to/ytv2021/vis/valid/instances.json
+├── trainvalset_davis --> /path/to/DAVIS-UnVOS/DAVIS-trainval/JPEGImages/480p/ 
+├── valid_davis.json --> /path/to/pre-computed/valid_davis.json
 ```
 
 ## Results
@@ -159,14 +168,47 @@ mkdir pretrained
 
 </tbody></table>
 
-### Evaluation
-**YouTube-VIS 2019**: A json file will be saved in `../Results_ytv19' folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/20128#participate-submit_results).
+<table><tbody>
+<!-- START TABLE -->
+<!-- TABLE HEADER -->
+<th valign="center">Dataset</th>
+<th valign="center">Method</th>
+<th valign="center">Backbone</th>
+<th valign="center">J&F</th>
+<th valign="center">J</th>
+<th valign="center">F</th>
+<th valign="bottom">download</th>
+ 
+<tr><tr><td align="center">DAVIS-UVOS</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNet-101</td>
+<td align="center"> 68.1 </td>  
+<td align="center"> 64.9 </td>
+<td align="center"> 71.4 </td>
+<td align="center"> <a href="https://drive.google.com/file/d/1gOgpEQ1rhFVCRRqR98Jr4s9MhWMUPvzl/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/davis/scripts/DAVIS/eval_vis_r101.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+ 
+<tr><tr><td align="center">DAVIS-UVOS</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNeXt-101</td>
+<td align="center"> 70.6 </td>  
+<td align="center"> 67.2 </td>
+<td align="center"> 73.9 </td>
+<td align="center"> <a href="https://drive.google.com/file/d/1fKNCS2ONTD3q9B4oB8TCTpMz7J0CLNtX/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/davis/scripts/DAVIS/eval_vis_x101.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+ 
+ </tbody></table>
 
-**YouTube-VIS 2021**: A json file will be saved in `../Results_ytv21' folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/28988#participate-submit_results).
+### Evaluation
+**YouTube-VIS 2019**: A json file will be saved in ***../Results_ytv19*** folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/20128#participate-submit_results).
+
+**YouTube-VIS 2021**: A json file will be saved in ***../Results_ytv21*** folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/28988#participate-submit_results).
+
+**DAVIS-UVOS**: The colored masks will be saved in ***../Results_davis*** folder. Please use the [official code](https://github.com/davisvideochallenge/davis2017-evaluation#evaluate-davis-2017-unsupervised) for evaluation.
 
 ## TODOs
   - [x] Results on YouTube-VIS 2021
-  - [ ] Results on DAVIS-UVOS
+  - [x] Results on DAVIS-UVOS
   - [x] [Category-Aware Sequence Reduction (CA Reduce)](https://youtube-vos.org/assets/challenge/2021/reports/VIS_4_Lin.pdf)
   - [ ] Training Codes
 
