@@ -29,7 +29,11 @@ sh demo.sh
 
 (2) Download the videos and jsons of *val* set from [YouTube-VIS 2021](https://competitions.codalab.org/competitions/28988#participate-get_data)
 
-(3) Symlink the corresponding dataset and json files to the ***data*** folder
+(3) Download the *trainval* set of [DAVIS-UVOS](https://davischallenge.org/davis2017/code.html)
+
+(4) Download other pre-computed jsons from 
+
+(5) Symlink the corresponding dataset and json files to the ***data*** folder
 ```
 mkdir data
 ```
