@@ -14,7 +14,10 @@ Please refer to [INSTALL.md](INSTALL.md).
 
 ## Demo
 You can compute the VIS results for your own videos.
-1. Download [pretrained weight](https://github.com/dvlab-research/ProposeReduce#results).
+1. Download a pretrained [ResNet-101](https://drive.google.com/file/d/1SmcJsIqluzjuH-uKCNs1ybNqvQClIqai/view?usp=sharing) and put it in ***pretrained*** folder.
+```
+mkdir pretrained
+```
 2. Put example videos in 'demo/inputs'. We support two types of inputs, *frames* directories or *.mp4* files (see [example](https://github.com/dvlab-research/ProposeReduce/tree/main/demo/inputs) for details).
 3. Run the following script and obtain the results in ***demo/outputs***.
 ```
@@ -193,11 +196,11 @@ mkdir pretrained
  </tbody></table>
 
 ### Evaluation
-**YouTube-VIS 2019**: A json file will be saved in `../Results_ytv19' folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/20128#participate-submit_results).
+**YouTube-VIS 2019**: A json file will be saved in ***../Results_ytv19*** folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/20128#participate-submit_results).
 
-**YouTube-VIS 2021**: A json file will be saved in `../Results_ytv21' folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/28988#participate-submit_results).
+**YouTube-VIS 2021**: A json file will be saved in ***../Results_ytv21*** folder. Please zip and upload to the [codalab server](https://competitions.codalab.org/competitions/28988#participate-submit_results).
 
-**DAVIS-UVOS**: The colored masks will be saved in `../Results_davis' folder. Please use the [official code](https://github.com/davisvideochallenge/davis2017-evaluation#evaluate-davis-2017-unsupervised) for evaluation.
+**DAVIS-UVOS**: The colored masks will be saved in ***../Results_davis*** folder. Please use the [official code](https://github.com/davisvideochallenge/davis2017-evaluation#evaluate-davis-2017-unsupervised) for evaluation.
 
 ## TODOs
   - [x] Results on YouTube-VIS 2021
