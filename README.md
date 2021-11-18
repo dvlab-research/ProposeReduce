@@ -185,7 +185,7 @@ mkdir pretrained
 <td align="center"> 68.1 </td>  
 <td align="center"> 64.9 </td>
 <td align="center"> 71.4 </td>
-<td align="center"> <a href="https://drive.google.com/file/d/1gOgpEQ1rhFVCRRqR98Jr4s9MhWMUPvzl/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/davis/scripts/DAVIS/eval_vis_r101.sh">scripts</a> </td>
+<td align="center"> <a href="https://drive.google.com/file/d/1gOgpEQ1rhFVCRRqR98Jr4s9MhWMUPvzl/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/DAVIS/eval_vis_r101.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
  
 <tr><tr><td align="center">DAVIS-UVOS</td>
@@ -194,7 +194,7 @@ mkdir pretrained
 <td align="center"> 70.6 </td>  
 <td align="center"> 67.2 </td>
 <td align="center"> 73.9 </td>
-<td align="center"> <a href="https://drive.google.com/file/d/1fKNCS2ONTD3q9B4oB8TCTpMz7J0CLNtX/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/davis/scripts/DAVIS/eval_vis_x101.sh">scripts</a> </td>
+<td align="center"> <a href="https://drive.google.com/file/d/1fKNCS2ONTD3q9B4oB8TCTpMz7J0CLNtX/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/DAVIS/eval_vis_x101.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
  
  </tbody></table>
