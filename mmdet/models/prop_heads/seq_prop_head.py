@@ -217,29 +217,13 @@ class SeqPropHead(nn.Module):
         for bs in range(len(gt_masks)):
             assert gt_masks[bs].shape[0] == gt_pids[bs].shape[0], (gt_masks[bs].shape[0], gt_pids[bs])
             cur_gt_masks = torch.LongTensor(gt_masks[bs]).cuda()
-            # cur_masks = torch.zeros(cur_gt_masks.shape[-2:]).cuda().long()
             cur_masks = dict()
             for k in range(cur_gt_masks.shape[0]):
                 if gt_pids[bs][k] != 0: 
-                    # if bs == 1:
-                        # print('bs', bs, k, gt_pids[bs][k])
-                    # print('shape', (cur_masks.shape), (cur_gt_masks[k]==1).shape)
-                    # cur_masks[cur_gt_masks[k]==1] = gt_pids[bs][k]
-                    # print('gt_pids', gt_pids[bs])
-                    # print('k', k, gt_pids[bs][k])
-                    # print('k.s', k, gt_pids[bs][k].shape)
-                    # print('k-', k, gt_pids[bs][k].item())
-                    # assert 1<0, (gt_pids[bs][k])
                     assert (cur_gt_masks[k]==1).sum() > 0, (cur_gt_masks[k]==1).sum()
                     cur_masks[gt_pids[bs][k].item()] = (cur_gt_masks[k] == 1)
-                    # if bs == 1:
-                    #     cv2.imwrite('../sample/%d_%d_gt.png' % (bs,k), (cur_gt_masks[k]==1).cpu().numpy()*255)
-                    #     cv2.imwrite('../sample/%d_%d_prop.png' % (bs,k), (cur_masks==gt_pids[bs][k]).cpu().numpy()*255)
-                    #     print('area', (cur_masks==gt_pids[bs][k]).sum())
-                    #     print('area2', (cur_masks==k+1).sum())
             prop_targets.append(cur_masks)
 
-        # prop_targets = torch.stack(prop_targets, 0)
         return prop_targets
 
     def calc_iouloss(self, pred, label, eps=1e-6):
@@ -247,8 +231,6 @@ class SeqPropHead(nn.Module):
         assert len(pred.shape) == 2, (pred.shape) # [H,W]
         assert pred.min() >= 0 and pred.max() <= 1, (pred.min(), pred.max())
         assert label.min() >= 0 and label.max() <= 1, (label.min(), label.max())
-        # print('pred', pred.min(), pred.max())
-        # print('label', label.min(), label.max())
         cur_loss = 1 - torch.min(pred, label).sum() / (torch.max(pred,label).sum() + eps)
         return cur_loss
 
