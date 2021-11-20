@@ -125,12 +125,12 @@ data_root = 'data/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 data = dict(
-    imgs_per_gpu=2,
+    imgs_per_gpu=1,
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        ann_file=None,
-        img_prefix=None,
+        ann_file=data_root + 'train_davis.json',
+        img_prefix=data_root + 'trainvalset_davis',
         img_scale=(854, 480),
         img_norm_cfg=img_norm_cfg,
         size_divisor=32,
@@ -166,7 +166,7 @@ data = dict(
         test_mode=True,
         with_track=True))
 # optimizer
-optimizer = dict(type='SGD', lr=0.00005*4/6, momentum=0.9, weight_decay=0.0001)  # gpu(bs) changed
+optimizer = dict(type='SGD', lr=0.0005*4/6, momentum=0.9, weight_decay=0.0001)  # gpu(bs) changed
 optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
 # learning policy
 lr_config = dict(
@@ -188,6 +188,6 @@ total_epochs = 4
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = '../work_dirs/seq_mask_rcnn_x101_fpn_1x_davis_ftstage'
-load_from = None
+load_from = 'pretrained_davis/seq_mask_rcnn_x101_davis_mainstage.pth'
 resume_from = None
 workflow = [('train', 1)]
