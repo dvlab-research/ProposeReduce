@@ -68,8 +68,129 @@ class SeqMaskRCNN(TwoStageDetector):
                       gt_bboxes,
                       gt_bboxes_ignore,
                       gt_labels,
+                      ref_labels,
+                      prop_ref_labels,
+                      ref_img, # images of reference frame
+                      ref_bboxes, # gt bbox of reference frame
+                      prop_ref_bboxes,
+                      gt_pids, # gt ids of current frame bbox mapped to reference frame
+                      ref_gt_pids, # ref --> gt
+                      prop_gt_pids,
+                      gt_masks=None,
+                      ref_masks=None,
+                      prop_ref_masks=None,
                       proposals=None):
-        pass
+        ''''''
+
+        x, x_ori = self.extract_feat(img, ret_ori=True)
+        ref_x = self.extract_feat(ref_img)
+        losses = dict()
+
+        # RPN forward and loss
+        if self.with_rpn:
+            rpn_outs = self.rpn_head(x)
+            rpn_loss_inputs = rpn_outs + (gt_bboxes, img_meta,
+                                          self.train_cfg.rpn)
+            rpn_losses = self.rpn_head.loss(*rpn_loss_inputs)
+            losses.update(rpn_losses)
+
+            proposal_inputs = rpn_outs + (img_meta, self.test_cfg.rpn)
+            proposal_list = self.rpn_head.get_bboxes(*proposal_inputs)
+        else:
+            proposal_list = proposals
+
+        # assign gts and sample proposals
+        if self.with_bbox or self.with_mask:
+            bbox_assigner = build_assigner(self.train_cfg.rcnn.assigner)
+            bbox_sampler = build_sampler(
+                self.train_cfg.rcnn.sampler, context=self)
+            num_imgs = img.size(0)
+            sampling_results = []
+            for i in range(num_imgs):
+                assign_result = bbox_assigner.assign(
+                    proposal_list[i], gt_bboxes[i], gt_bboxes_ignore[i],
+                    gt_labels[i], gt_pids[i])
+                sampling_result = bbox_sampler.sample(
+                    assign_result,
+                    proposal_list[i],
+                    gt_bboxes[i],
+                    gt_labels[i],
+                    gt_pids[i],
+                    feats=[lvl_feat[i][None] for lvl_feat in x])
+                sampling_results.append(sampling_result)
+
+        # bbox head forward and loss
+        if self.with_bbox:
+            rois = bbox2roi([res.bboxes for res in sampling_results])
+            bbox_img_n = [res.bboxes.size(0) for res in sampling_results]
+            # TODO: a more flexible way to decide which feature maps to use
+            bbox_feats = self.bbox_roi_extractor(
+                x[:self.bbox_roi_extractor.num_inputs], rois)
+            cls_score, bbox_pred = self.bbox_head(bbox_feats)
+            # fetch bbox and object_id targets
+            bbox_targets, (ids, id_weights) = self.bbox_head.get_target(
+                sampling_results, gt_bboxes, gt_labels, self.train_cfg.rcnn)
+            loss_bbox = self.bbox_head.loss(cls_score, bbox_pred,
+                                            *bbox_targets)
+            losses.update(loss_bbox)
+
+        # mask head forward and loss
+        if self.with_mask:
+            pos_rois = bbox2roi([res.pos_bboxes for res in sampling_results])
+            mask_feats = self.mask_roi_extractor(
+                x[:self.mask_roi_extractor.num_inputs], pos_rois)
+            mask_pred = self.mask_head(mask_feats)
+
+            mask_targets = self.mask_head.get_target(
+                sampling_results, gt_masks, self.train_cfg.rcnn)
+            pos_labels = torch.cat(
+                [res.pos_gt_labels for res in sampling_results])
+            loss_mask = self.mask_head.loss(mask_pred, mask_targets,
+                                            pos_labels)
+            losses.update(loss_mask)
+            ori_shape = (ref_x[0].shape[-2]*4, ref_x[0].shape[-1]*4)
+            for k in range(len(ref_masks)):
+                if ref_masks[k].shape[-2:] != ori_shape:
+                    new_mask = np.zeros((ref_masks[k].shape[0],) + ori_shape, dtype=np.uint8)
+                    new_mask[:,:ref_masks[k].shape[1],:ref_masks[k].shape[2]] = ref_masks[k]
+                    ref_masks[k] = new_mask
+                if gt_masks[k].shape[-2:] != ori_shape:
+                    new_mask = np.zeros((gt_masks[k].shape[0],) + ori_shape, dtype=np.uint8)
+                    new_mask[:,:gt_masks[k].shape[1],:gt_masks[k].shape[2]] = gt_masks[k]
+                    gt_masks[k] = new_mask 
+            ## stm ##
+            ref_rois = bbox2roi(prop_ref_bboxes)
+            ref_bbox_img_n = [cur_box.size(0) for cur_box in prop_ref_bboxes]
+            ref_mask_feats = self.mask_roi_extractor(
+                ref_x[:self.mask_roi_extractor.num_inputs], ref_rois)
+            ref_mask_pred = self.mask_head(ref_mask_feats).detach()
+            ref_mask_pred = torch.split(ref_mask_pred, ref_bbox_img_n, dim=0)
+            ref_mask_pred2ori = []
+
+            for k in range(len(ref_mask_pred)):
+                assert prop_ref_labels[k].min() > 0, (prop_ref_labels[k])
+                assert prop_ref_bboxes[k].shape[0] == prop_ref_labels[k].shape[0], (prop_ref_bboxes[k].shape, prop_ref_labels[k].shape)
+                try:
+                    cur_mask = self.mask_head.get_seg_masks_tensor(
+                        ref_mask_pred[k], prop_ref_bboxes[k], prop_ref_labels[k]-1, self.test_cfg.rcnn, img_meta[k]['ori_shape'],
+                        img_meta[k]['scale_factor'], rescale=False)
+                except Exception as e:
+                    print('e', e)
+                    assert 1<0, (k, prop_ref_bboxes[k], prop_ref_labels[k], img_meta[k], ref_mask_pred[k].shape)
+                ref_mask_pred2ori.append(cur_mask)
+
+            prop_preds = self.prop_head(ref_x[0], x[0], x_ori[:2], ref_mask_pred2ori, img_meta)
+            prop_targets = self.prop_head.get_target(gt_masks, prop_gt_pids)
+            assert len(prop_preds) == len(prop_targets)
+            for bs in range(len(prop_preds)):
+                assert prop_preds[bs].shape[1] == ref_mask_pred2ori[bs].shape[0]+1, (bs, prop_preds[bs].shape, 
+                                                                             ref_mask_pred2ori[bs].shape)
+            cur_pred = torch.softmax(prop_preds[0].detach(), dim=1)
+            loss_prop = self.prop_head.loss(prop_preds, prop_targets)
+            losses.update(loss_prop)
+
+        return losses
+
 
     def simple_test(self, img, img_meta, proposals=None, rescale=False, ret_cls_only=False,
                     ret_det_cls_atn=False, prop=None, op='feat', info=None):
@@ -92,7 +213,7 @@ class SeqMaskRCNN(TwoStageDetector):
             det_obj_ids = np.arange(det_bboxes.size(0))
             bbox_results = bbox2result_with_id(det_bboxes, det_labels, det_obj_ids,
                                                self.bbox_head.num_classes)
-            
+
             if len(bbox_results.keys()) == 0:
                 return None, None
             segm_results = self.simple_test_mask(
