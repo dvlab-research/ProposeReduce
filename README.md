@@ -212,8 +212,9 @@ mkdir pretrained
 **DAVIS-UVOS**: Color masks will be saved in ***../Results_davis*** folder. Please use the [official code](https://github.com/davisvideochallenge/davis2017-evaluation#evaluate-davis-2017-unsupervised) for evaluation.
 
 ## Training
-To reproduce the results, we provide the pre-trained model on the main-training stage and the training scripts for the finetuning stage.
-Please put the pre-trained model into ***pretrained*** directory and then run the corresponding script.
+To reproduce the results, we provide the pre-trained model on the **main-training stage** and the training scripts for the **finetuning stage** (described in Sec. 4.2 of the paper).
+
+Please put the pre-trained model into ***pretrained*** folder and then run the corresponding script.
 
 <table><tbody>
 <!-- START TABLE -->
@@ -278,6 +279,8 @@ Please put the pre-trained model into ***pretrained*** directory and then run th
 <!-- <td align="center"> To be released </td> -->
  
 </tbody></table>
+
+The trained checkpoints will be saved in ***../work_dirs*** folder. To evaluate the effect, please replace the pretrained weights of [inference](https://github.com/dvlab-research/ProposeReduce/tree/train#results) with the trained checkpoints and run the inference scripts.
 
 ## TODOs
   - [x] Results on YouTube-VIS 2021
