@@ -186,7 +186,7 @@ log_config = dict(
 total_epochs = 4
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = '../work_dirs/seq_mask_rcnn_x101_fpn_1x_youtubevos21_ftstage'
+work_dir = '../work_dirs/seq_mask_rcnn_x101_fpn_1x_youtubevis21_ftstage'
 load_from = 'pretrained_21/seq_mask_rcnn_x101_ytv21_mainstage.pth'
 resume_from = None
 workflow = [('train', 1)]
