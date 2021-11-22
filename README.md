@@ -227,19 +227,19 @@ Please put the pre-trained model into ***pretrained*** folder and then run the c
 <tr><td align="center">YouTube-VIS 2019</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNet-50</td>
-<td align="center"> <a href="https://drive.google.com/file/d/15GpsH2Owgv57yruLEUM1kuotOW0xFO3q/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/YTV2019/run_vis_r50.sh">scripts</a> </td>
+<td align="center"> <a href="https://drive.google.com/file/d/15GpsH2Owgv57yruLEUM1kuotOW0xFO3q/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2019/run_vis_r50.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
    
 <tr><tr><td align="center">YouTube-VIS 2019</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNet-101</td>
-<td align="center"> <a href="https://drive.google.com/file/d/1XjqdryRhsFsYWH1m2O1TQGhbfwv57rZV/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/YTV2019/run_vis_r101.sh">scripts</a> </td>
+<td align="center"> <a href="https://drive.google.com/file/d/1XjqdryRhsFsYWH1m2O1TQGhbfwv57rZV/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2019/run_vis_r101.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
    
 <tr><tr><td align="center">YouTube-VIS 2019</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNeXt-101</td>
-<td align="center"> <a href="https://drive.google.com/file/d/17NNQcvpYPKEV-P7RswhbuxxBIa0cwAYe/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/YTV2019/run_vis_x101.sh">scripts</a> </td>
+<td align="center"> <a href="https://drive.google.com/file/d/17NNQcvpYPKEV-P7RswhbuxxBIa0cwAYe/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2019/run_vis_x101.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
   
 <tr><tr><td align="center"></td>
@@ -251,13 +251,13 @@ Please put the pre-trained model into ***pretrained*** folder and then run the c
 <tr><td align="center">YouTube-VIS 2021</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNet-50</td>
-<td align="center"> <a href="https://drive.google.com/file/d/1vn15yt_j27wz0eIpoYy3IoacRbdhMiLm/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/YTV2021/run_vis_r50.sh">scripts</a> </td>
+<td align="center"> <a href="https://drive.google.com/file/d/1vn15yt_j27wz0eIpoYy3IoacRbdhMiLm/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2021/run_vis_r50.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
  
 <tr><tr><td align="center">YouTube-VIS 2021</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNeXt-101</td>
-<td align="center"> <a href="https://drive.google.com/file/d/1IxGHJ77xK4c6f_3SsyCQnwG6obRhBPHz/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/YTV2021/run_vis_x101.sh">scripts</a> </td>
+<td align="center"> <a href="https://drive.google.com/file/d/1IxGHJ77xK4c6f_3SsyCQnwG6obRhBPHz/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/YTV2021/run_vis_x101.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
  
 <tr><tr><td align="center"></td>
@@ -269,13 +269,13 @@ Please put the pre-trained model into ***pretrained*** folder and then run the c
 <tr><tr><td align="center">DAVIS-UVOS</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNet-101</td>
-<td align="center"> <a href="https://drive.google.com/file/d/1NqyuMWbORNIYWhR6duk3Xw94w8yKxBPK/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/DAVIS/run_vis_r101.sh">scripts</a> </td>
+<td align="center"> <a href="https://drive.google.com/file/d/1NqyuMWbORNIYWhR6duk3Xw94w8yKxBPK/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/DAVIS/run_vis_r101.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
  
 <tr><tr><td align="center">DAVIS-UVOS</td>
 <td align="center">Seq Mask R-CNN</td>
 <td align="center">ResNeXt-101</td>
-<td align="center"> <a href="https://drive.google.com/file/d/1EojHV0cmHV349ryPo3RGLS2Y_7lnoSUa/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/DAVIS/run_vis_x101.sh">scripts</a> </td>
+<td align="center"> <a href="https://drive.google.com/file/d/1EojHV0cmHV349ryPo3RGLS2Y_7lnoSUa/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/main/scripts/DAVIS/run_vis_x101.sh">scripts</a> </td>
 <!-- <td align="center"> To be released </td> -->
  
 </tbody></table>
