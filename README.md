@@ -25,9 +25,9 @@ sh demo.sh
 ```
 
 ## Data Preparation
-(1) Download the videos and jsons of *val* set from [YouTube-VIS 2019](https://competitions.codalab.org/competitions/20128#participate-get-data)
+(1) Download the videos and jsons of *train* and *val* sets from [YouTube-VIS 2019](https://competitions.codalab.org/competitions/20128#participate-get-data)
 
-(2) Download the videos and jsons of *val* set from [YouTube-VIS 2021](https://competitions.codalab.org/competitions/28988#participate-get_data)
+(2) Download the videos and jsons of *train* and *val* sets from [YouTube-VIS 2021](https://competitions.codalab.org/competitions/28988#participate-get_data)
 
 (3) Download the *trainval* set of [DAVIS-UVOS](https://davischallenge.org/davis2017/code.html)
 
@@ -39,11 +39,16 @@ mkdir data
 ```
 ```
 data
-├── valset_ytv19 --> /path/to/ytv2019/vos/valid/JPEGImages/ 
+├── trainset_ytv19 --> /path/to/ytv2019/vos/train/JPEGImages/
+├── train_ytv19.json --> /path/to/ytv2019/vis/train.json
+├── valset_ytv19 --> /path/to/ytv2019/vos/valid/JPEGImages/
 ├── valid_ytv19.json --> /path/to/ytv2019/vis/valid.json
+├── trainset_ytv21 --> /path/to/ytv2021/vis/train/JPEGImages/ 
+├── train_ytv21.json --> /path/to/ytv2021/vis/train/instances.json
 ├── valset_ytv21 --> /path/to/ytv2021/vis/valid/JPEGImages/ 
 ├── valid_ytv21.json --> /path/to/ytv2021/vis/valid/instances.json
 ├── trainvalset_davis --> /path/to/DAVIS-UnVOS/DAVIS-trainval/JPEGImages/480p/ 
+├── train_davis.json --> /path/to/pre-computed/train_davis.json
 ├── valid_davis.json --> /path/to/pre-computed/valid_davis.json
 ```
 
@@ -206,11 +211,82 @@ mkdir pretrained
 
 **DAVIS-UVOS**: Color masks will be saved in ***../Results_davis*** folder. Please use the [official code](https://github.com/davisvideochallenge/davis2017-evaluation#evaluate-davis-2017-unsupervised) for evaluation.
 
+## Training
+To reproduce the results, we provide the pre-trained model on the **main-training stage** and the training scripts for the **finetuning stage** (described in Sec. 4.2 of the paper).
+
+Please put the pre-trained model into ***pretrained*** folder and then run the corresponding script.
+
+<table><tbody>
+<!-- START TABLE -->
+<!-- TABLE HEADER -->
+<th valign="center">Dataset</th>
+<th valign="center">Method</th>
+<th valign="center">Backbone</th>
+<th valign="bottom">download</th>
+  
+<tr><td align="center">YouTube-VIS 2019</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNet-50</td>
+<td align="center"> <a href="https://drive.google.com/file/d/15GpsH2Owgv57yruLEUM1kuotOW0xFO3q/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/YTV2019/run_vis_r50.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+   
+<tr><tr><td align="center">YouTube-VIS 2019</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNet-101</td>
+<td align="center"> <a href="https://drive.google.com/file/d/1XjqdryRhsFsYWH1m2O1TQGhbfwv57rZV/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/YTV2019/run_vis_r101.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+   
+<tr><tr><td align="center">YouTube-VIS 2019</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNeXt-101</td>
+<td align="center"> <a href="https://drive.google.com/file/d/17NNQcvpYPKEV-P7RswhbuxxBIa0cwAYe/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/YTV2019/run_vis_x101.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+  
+<tr><tr><td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<!-- <td align="center"> To be released </td> -->
+ 
+<tr><td align="center">YouTube-VIS 2021</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNet-50</td>
+<td align="center"> <a href="https://drive.google.com/file/d/1vn15yt_j27wz0eIpoYy3IoacRbdhMiLm/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/YTV2021/run_vis_r50.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+ 
+<tr><tr><td align="center">YouTube-VIS 2021</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNeXt-101</td>
+<td align="center"> <a href="https://drive.google.com/file/d/1IxGHJ77xK4c6f_3SsyCQnwG6obRhBPHz/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/YTV2021/run_vis_x101.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+ 
+<tr><tr><td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<!-- <td align="center"> To be released </td> -->
+ 
+<tr><tr><td align="center">DAVIS-UVOS</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNet-101</td>
+<td align="center"> <a href="https://drive.google.com/file/d/1NqyuMWbORNIYWhR6duk3Xw94w8yKxBPK/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/DAVIS/run_vis_r101.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+ 
+<tr><tr><td align="center">DAVIS-UVOS</td>
+<td align="center">Seq Mask R-CNN</td>
+<td align="center">ResNeXt-101</td>
+<td align="center"> <a href="https://drive.google.com/file/d/1EojHV0cmHV349ryPo3RGLS2Y_7lnoSUa/view?usp=sharing">model</a>&nbsp;|&nbsp;<a href="https://github.com/dvlab-research/ProposeReduce/blob/train/scripts/DAVIS/run_vis_x101.sh">scripts</a> </td>
+<!-- <td align="center"> To be released </td> -->
+ 
+</tbody></table>
+
+The trained checkpoints will be saved in ***../work_dirs*** folder. To evaluate the effect, please replace the pretrained weights of [inference](https://github.com/dvlab-research/ProposeReduce/tree/train#results) with the trained checkpoints and run the inference scripts.
+
 ## TODOs
   - [x] Results on YouTube-VIS 2021
   - [x] Results on DAVIS-UVOS
   - [x] [Category-Aware Sequence Reduction (CA Reduce)](https://youtube-vos.org/assets/challenge/2021/reports/VIS_4_Lin.pdf)
-  - [ ] Training Codes
+  - [x] Training Codes
 
 ## Citation
 If you find this work useful in your research, please cite:

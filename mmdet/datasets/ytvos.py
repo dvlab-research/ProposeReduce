@@ -134,7 +134,31 @@ class YTVOSDataset(CustomDataset):
     def __getitem__(self, idx):
         if self.test_mode:
             return self.prepare_test_img(self.img_ids[idx])
-        data = self.prepare_train_img(self.img_ids[idx])
+        cnt = 0
+        ## some unknown errer might happen, we fix it by iterating multiple times
+        ## need to be fixed later
+        while True:
+            if cnt == 0:
+                try:
+                    data = self.prepare_train_img(self.img_ids[idx])
+                except Exception as e:
+                    pass
+                else:
+                    break
+                try:
+                    data = self.prepare_train_img(self.img_ids[idx], self2ref=True)
+                except Exception as e:
+                    pass
+                else:
+                    break
+            try:
+                data = self.prepare_train_img(self.img_ids[random.randint(0, len(self.img_ids)-1)], self2ref=True)
+            except Exception as e:
+                pass
+            else:
+                break
+            cnt += 1
+            assert cnt < 10, (cnt, 'error too many times...')
         return data
     
     def load_annotations(self, ann_file):
@@ -195,9 +219,226 @@ class YTVOSDataset(CustomDataset):
         bbox = np.hstack((new_x1y1,new_x2y2)).astype(np.float32)
         return bbox
 
+    ## for same class, if intersec>0, set(tgt_obj_id) should be covered by set(ref_obj_id)
+    def ref_cover_tgt(self, vid, frame_id, ref_frame_id):
+        ann = self.get_ann_info(vid, frame_id)
+        ref_ann = self.get_ann_info(vid, ref_frame_id)
+        # first rule
+        ann_objid = set(ann['obj_ids'])
+        ref_ann_objid = set(ref_ann['obj_ids'])
+        if len(ann_objid.intersection(ref_ann_objid)) == 0:
+            return False
+        # second rule
+        tgt_obj_id = dict()
+        ref_obj_id = dict()
+        # init
+        for i in range(len(ann['obj_ids'])):
+            if ann['labels'][i] not in tgt_obj_id:
+                tgt_obj_id[ann['labels'][i]] = set()
+            tgt_obj_id[ann['labels'][i]].add(ann['obj_ids'][i])
+        for i in range(len(ref_ann['obj_ids'])):
+            if ref_ann['labels'][i] not in ref_obj_id:
+                ref_obj_id[ref_ann['labels'][i]] = set()
+            ref_obj_id[ref_ann['labels'][i]].add(ref_ann['obj_ids'][i])
+        # compare
+        flag = True
+        flag_atleastone = False
+        for c in tgt_obj_id.keys():
+            if (c not in ref_obj_id):
+                continue
+            if tgt_obj_id[c].intersection(ref_obj_id[c]) != tgt_obj_id[c]:
+                flag = False
+                break
+            flag_atleastone = True
+        if flag and flag_atleastone:
+            # print(tgt_obj_id, ref_obj_id)
+            return True
+        else:
+            return False
+
+    def sample_ref(self, idx, self2ref=False):
+        # sample another frame in the same sequence as reference
+        vid, frame_id = idx
+        vid_info = self.vid_infos[vid]
+        if self.allow_len1_vid and len(vid_info['filenames']) == 1:
+            return idx
+        sample_range = range(len(vid_info['filenames']))
+        valid_samples = []
+        for i in sample_range:
+          # check if the frame id is valid
+          ref_idx = (vid, i)
+          if i != frame_id and ref_idx in self.img_ids and self.ref_cover_tgt(vid, frame_id, i):
+              valid_samples.append(ref_idx)
+        if len(valid_samples) == 0 or self2ref:
+            # print(idx, 'len(valid_sample)==0, add itself as ref..')
+            valid_samples.append(idx)
+        assert len(valid_samples) > 0
+        return random.choice(valid_samples)
+
     def prepare_train_img(self, idx, self2ref=False):
         # prepare a pair of image in a sequence
-        pass
+        vid, frame_id = idx
+        vid_info = self.vid_infos[vid]
+        # load image
+        img = mmcv.imread(osp.join(self.img_prefix, vid_info['filenames'][frame_id]))
+        basename = osp.basename(vid_info['filenames'][frame_id])
+        _, ref_frame_id = self.sample_ref(idx, self2ref=self2ref)
+        ref_img = mmcv.imread(osp.join(self.img_prefix, vid_info['filenames'][ref_frame_id]))
+        # load proposals if necessary
+        if self.proposals is not None:
+            proposals = self.proposals[idx][:self.num_max_proposals]
+            # TODO: Handle empty proposals properly. Currently images with
+            # no proposals are just ignored, but they can be used for
+            # training in concept.
+            if len(proposals) == 0:
+                return None
+            if not (proposals.shape[1] == 4 or proposals.shape[1] == 5):
+                raise AssertionError(
+                    'proposals should have shapes (n, 4) or (n, 5), '
+                    'but found {}'.format(proposals.shape))
+            if proposals.shape[1] == 5:
+                scores = proposals[:, 4, None]
+                proposals = proposals[:, :4]
+            else:
+                scores = None
+
+        ann = self.get_ann_info(vid, frame_id)
+        ref_ann = self.get_ann_info(vid, ref_frame_id)
+        gt_bboxes = ann['bboxes']
+        gt_labels = ann['labels']
+        ref_bboxes = ref_ann['bboxes']
+        ref_labels = ref_ann['labels']
+        # obj ids attribute does not exist in current annotation
+        # need to add it
+        ref_ids = ref_ann['obj_ids']
+        gt_ids = ann['obj_ids']
+        # compute matching of reference frame with current frame
+        # 0 denote there is no matching
+        gt_pids = [ref_ids.index(i)+1 if i in ref_ids else 0 for i in gt_ids]
+        ref_gt_pids = [gt_ids.index(i)+1 if i in gt_ids else 0 for i in ref_ids]
+        if self.with_crowd:
+            gt_bboxes_ignore = ann['bboxes_ignore']
+
+        # skip the image if there is no valid gt bbox
+        if len(gt_bboxes) == 0:
+            return None
+
+        # extra augmentation
+        if self.extra_aug is not None:
+            img, gt_bboxes, gt_labels = self.extra_aug(img, gt_bboxes,
+                                                       gt_labels)
+
+        # apply transforms
+        flip = True if np.random.rand() < self.flip_ratio else False
+        img_scale = random_scale(self.img_scales)  # sample a scale
+        img, img_shape, pad_shape, scale_factor = self.img_transform(
+            img, img_scale, flip, keep_ratio=self.resize_keep_ratio)
+        
+        img = img.copy() 
+        ref_img, ref_img_shape, _, ref_scale_factor = self.img_transform(
+            ref_img, img_scale, flip, keep_ratio=self.resize_keep_ratio)
+        ref_img = ref_img.copy()
+        if self.proposals is not None:
+            proposals = self.bbox_transform(proposals, img_shape, scale_factor,
+                                            flip)
+            proposals = np.hstack(
+                [proposals, scores]) if scores is not None else proposals
+        gt_bboxes = self.bbox_transform(gt_bboxes, img_shape, scale_factor,
+                                        flip)
+        ref_bboxes = self.bbox_transform(ref_bboxes, ref_img_shape, ref_scale_factor,
+                                          flip)
+        if self.aug_ref_bbox_param is not None:
+            ref_bboxes = self.bbox_aug(ref_bboxes, ref_img_shape)
+        if self.with_crowd:
+            gt_bboxes_ignore = self.bbox_transform(gt_bboxes_ignore, img_shape,
+                                                   scale_factor, flip)
+        if self.with_mask:
+            gt_masks = self.mask_transform(ann['masks'], pad_shape,
+                                           scale_factor, flip)
+            ref_masks = self.mask_transform(ref_ann['masks'], pad_shape,
+                                           scale_factor, flip)
+        ## filter gt_objs w/o fg mask
+        valid_gt_ids = []
+        for k,obj_id in enumerate(gt_ids):
+            if gt_masks[k].sum() > 0:
+                valid_gt_ids.append(obj_id)
+        assert len(valid_gt_ids) > 0, (idx, gt_ids, valid_gt_ids)
+        ## select ref_ids in gt_ids for prop
+        prop_ref_ids = []
+        prop_ref_bboxes = []
+        prop_ref_labels = []
+        prop_ref_masks = []
+        for k,obj_id in enumerate(ref_ids):
+            # if obj_id in gt_ids:
+            if obj_id in valid_gt_ids:
+                prop_ref_ids.append(obj_id)
+                prop_ref_bboxes.append(ref_bboxes[k])
+                prop_ref_labels.append(ref_labels[k])
+                prop_ref_masks.append(ref_masks[k])
+        assert len(prop_ref_ids) > 0, (idx, gt_ids, ref_ids, valid_gt_ids)
+        prop_ref_bboxes = np.stack(prop_ref_bboxes, 0)
+        prop_ref_labels = np.stack(prop_ref_labels, 0)
+        prop_ref_masks = np.stack(prop_ref_masks, 0)
+        ## too much objs make out of memory in the prop head
+        obj_num_thr = 5 
+        if len(prop_ref_ids) > obj_num_thr:
+            select_idx = npr.choice(len(prop_ref_ids), obj_num_thr, replace=False)
+            prop_ref_ids = np.array(prop_ref_ids)[select_idx].tolist()
+            prop_ref_bboxes = prop_ref_bboxes[select_idx]
+            ## constraint boundary box
+            for k in range(prop_ref_bboxes.shape[0]):
+                if prop_ref_bboxes[k][2] >= img_shape[1] or prop_ref_bboxes[k][3] >= img_shape[0]:
+                    # print('prop_ref_bboxes - before', k, prop_ref_bboxes[k], img_shape)
+                    prop_ref_bboxes[k][2] = min(prop_ref_bboxes[k][2], img_shape[1])
+                    prop_ref_bboxes[k][3] = min(prop_ref_bboxes[k][3], img_shape[0])
+                    # print('prop_ref_bboxes - after', k, prop_ref_bboxes[k], img_shape)
+            prop_ref_labels = prop_ref_labels[select_idx]
+            prop_ref_masks = prop_ref_masks[select_idx]
+        prop_gt_pids = [prop_ref_ids.index(i)+1 if i in prop_ref_ids else 0 for i in gt_ids]
+
+        ori_shape = (vid_info['height'], vid_info['width'], 3)
+        ts = float(frame_id) / len(vid_info['filenames'])
+        ref_ts = float(ref_frame_id) / len(vid_info['filenames'])
+        vid_name = vid_info['filenames'][0]
+        img_meta = dict(
+            ori_shape=ori_shape,
+            img_shape=img_shape,
+            pad_shape=pad_shape,
+            scale_factor=scale_factor,
+            flip=flip,
+            frame_id=frame_id,
+            ref_frame_id=ref_frame_id,
+            ts = ts,
+            ref_ts = ref_ts,
+            frame_num=len(vid_info['filenames']),
+            vid_name=vid_name
+        )
+
+        data = dict(
+            img=DC(to_tensor(img), stack=True),
+            ref_img=DC(to_tensor(ref_img), stack=True),
+            img_meta=DC(img_meta, cpu_only=True),
+            gt_bboxes=DC(to_tensor(gt_bboxes)),
+            ref_bboxes = DC(to_tensor(ref_bboxes)),
+            prop_ref_bboxes = DC(to_tensor(prop_ref_bboxes))
+        )
+        if self.proposals is not None:
+            data['proposals'] = DC(to_tensor(proposals))
+        if self.with_label:
+            data['gt_labels'] = DC(to_tensor(gt_labels))
+            data['ref_labels'] = DC(to_tensor(ref_labels))
+            data['prop_ref_labels'] = DC(to_tensor(prop_ref_labels))
+        if self.with_track:
+            data['gt_pids'] = DC(to_tensor(gt_pids))
+            data['ref_gt_pids'] = DC(to_tensor(ref_gt_pids))
+            data['prop_gt_pids'] = DC(to_tensor(prop_gt_pids))
+        if self.with_crowd:
+            data['gt_bboxes_ignore'] = DC(to_tensor(gt_bboxes_ignore))
+        if self.with_mask:
+            data['gt_masks'] = DC(gt_masks, cpu_only=True)
+            data['ref_masks'] = DC(ref_masks, cpu_only=True)
+            data['prop_ref_masks'] = DC(prop_ref_masks, cpu_only=True)
+        return data
 
     def prepare_test_img(self, idx):
         """Prepare an image for testing (multi-scale and flipping)"""

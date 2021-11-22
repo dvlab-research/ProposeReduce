@@ -121,6 +121,60 @@ class FCNMaskHead(nn.Module):
         loss['loss_mask'] = loss_mask
         return loss
 
+    def get_seg_masks_tensor(self, mask_pred, det_bboxes, det_labels, rcnn_test_cfg,
+                      ori_shape, scale_factor, rescale, det_obj_ids=None):
+        """Get segmentation masks from mask_pred and bboxes.
+
+        Args:
+            mask_pred (Tensor or ndarray): shape (n, #class+1, h, w).
+                For single-scale testing, mask_pred is the direct output of
+                model, whose type is Tensor, while for multi-scale testing,
+                it will be converted to numpy array outside of this method.
+            det_bboxes (Tensor): shape (n, 4/5)
+            det_labels (Tensor): shape (n, )
+            img_shape (Tensor): shape (3, )
+            rcnn_test_cfg (dict): rcnn testing config
+            ori_shape: original image size
+
+        Returns:
+            list[list]: encoded masks
+        """
+        if isinstance(mask_pred, torch.Tensor):
+            mask_pred = mask_pred.sigmoid().cpu().numpy()
+        assert isinstance(mask_pred, np.ndarray)
+
+        bboxes = det_bboxes.cpu().numpy()[:, :4]
+        labels = det_labels.cpu().numpy() + 1
+
+        if rescale:
+            img_h, img_w = ori_shape[:2]
+        else:
+            eps = 1e-6
+            img_h = np.round(ori_shape[0] * scale_factor + eps).astype(np.int32)
+            img_w = np.round(ori_shape[1] * scale_factor + eps).astype(np.int32)
+            scale_factor = 1.0
+        det_masks = []
+        for i in range(bboxes.shape[0]):
+            bbox = (bboxes[i, :] / scale_factor).astype(np.int32)
+            label = labels[i]
+            w = max(bbox[2] - bbox[0] + 1, 1)
+            h = max(bbox[3] - bbox[1] + 1, 1)
+
+            if not self.class_agnostic:
+                mask_pred_ = mask_pred[i, label, :, :]
+            else:
+                mask_pred_ = mask_pred[i, 0, :, :]
+            im_mask = np.zeros((img_h, img_w), dtype=np.float32)
+            # print('w,h', w, h, mask_pred_.shape)
+            bbox_mask = mmcv.imresize(mask_pred_, (w, h))
+            # print('bbox_mask', bbox_mask.shape)
+            # bbox_mask = (bbox_mask > rcnn_test_cfg.mask_thr_binary).astype(
+            #     np.uint8)
+            im_mask[bbox[1]:bbox[1] + h, bbox[0]:bbox[0] + w] = bbox_mask
+            im_mask = torch.FloatTensor(im_mask).cuda()
+            det_masks.append(im_mask)
+        det_masks = torch.stack(det_masks, 0)
+        return det_masks
     def get_seg_masks(self, mask_pred, det_bboxes, det_labels, rcnn_test_cfg,
                       ori_shape, scale_factor, rescale, det_obj_ids=None):
         """Get segmentation masks from mask_pred and bboxes.
