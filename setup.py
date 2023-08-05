@@ -106,6 +106,6 @@ if __name__ == '__main__':
         setup_requires=['pytest-runner'],
         tests_require=['pytest'],
         install_requires=[
-            'numpy', 'matplotlib', 'six', 'terminaltables'
+            'numpy', 'matplotlib', 'six', 'terminaltables', 'scipy', 'tqdm'
         ],
         zip_safe=False)
